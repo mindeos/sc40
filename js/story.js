@@ -110,11 +110,26 @@ const remindSeen = {}; // desde cuándo está pendiente cada invitación (para r
 // (o [lo que dice Cuy, función que se ejecuta después], p. ej. para teletransportar).
 const CHEATS = {
   wherearemysocks: { run: () => sockClue() },
-  frozen: { // a la Isla Helada sin pasar por Narwal… y sin billete de vuelta
+  pamukalefeet: { // a la Isla Helada sin pasar por Narwal… y sin billete de vuelta
     run: (scene) => ['Dice que te abrigues bien. Y que cierres los ojos.', () => scene.warp('helada', 19, 22, 'up')],
   },
-  gimmemoney: {
-    run: () => { S.d.coins++; S.save(); give('{coin} +1 moneda de gachapón'); return 'Dice que tengas esta moneda. Que es para el gachapón, no para gastártela en mazapanes.'; },
+  forgoodluck: {
+    run: () => { S.d.coins++; S.save(); give('{coin} +1 moneda de gachapón'); return 'Dice que esta moneda es para la buena suerte. Y para el gachapón, no para gastártela en mazapanes.'; },
+  },
+  iwannagofast: { // Colgadín anda el doble de rápido por el mapa (los minijuegos no cambian); otra nota lo deshace
+    run: () => {
+      S.set('fast', !S.flag('fast'));
+      return S.flag('fast')
+        ? 'Dice que corras, que la fiesta no espera. Y que no te estampes contra los muebles.'
+        : 'Dice que ya está bien de correr, que vas a gastar las patas. Vuelves a ir a paso normal.';
+    },
+  },
+  yellowbrickroad: { // desde entonces, tres toques seguidos al botón de acción por el mapa llevan a casa de Cait (ver world.js)
+    once: true,
+    run: () => {
+      S.set('homeTaps');
+      return 'Dice que, cuando quieras volver a casa de Cait, des tres golpecitos con los talones. Bueno: tres toques seguidos al botón de acción, que los talones no se te ven.';
+    },
   },
 };
 // Dónde buscar un calcetín que falta: primero los que completarían una pareja (para Scooby), luego cualquiera
@@ -1033,6 +1048,13 @@ export const SCRIPTS = {
     await UI.say('Cuca', RUSO[(S.d.flags.cucaN = ((S.d.flags.cucaN || 0) + 1)) % RUSO.length], { ruso: true });
     await UI.say('Cuy', 'Dice: «' + hint() + '»');
   },
+  // Truco #yellowbrickroad: tres toques al botón de acción por el mapa (sin nada delante con lo que hablar)
+  async goHome(scene) {
+    if (scene.map.id === 'cait') return UI.say(C, 'Tres golpecitos con los talones… Ah, que ya estoy en casa de Cait.');
+    await UI.say(C, 'Tres golpecitos con los talones… ¡No hay sitio como la casa de Cait!');
+    scene.warp('cait', 6, 8, 'up');
+    return true;
+  },
   async signTemple() { await UI.say('', 'TEMPLO DE LOS SABIOS. Suba la escalinata con respeto. Se aceptan calcetines.'); },
 
   // ---------------------------------------------------------- Biang Biang
@@ -1322,7 +1344,7 @@ export const SCRIPTS = {
     invite('narwal', 'Narwal');
     if (await UI.choose('Narwal', '¡Fiuuu! ¿Rumbo a la Isla Helada? Agárrate a la corona, que de cuerno no ando bien.', ['¡A la Isla Helada!', 'Ahora no']) === 0) scene.warp('helada', 19, 22, 'up');
   },
-  // En el muelle de la Isla Helada sin haber llamado a Narwal (se llegó con el truco #frozen)
+  // En el muelle de la Isla Helada sin haber llamado a Narwal (se llegó con el truco #pamukalefeet)
   async heladaAtrapado(scene) {
     await UI.say(C, ['Ni un barco, ni una barca, ni un triste flotador…', 'Me he quedado atrapado para siempre en esta isla. Tenía que haber pensado en cómo volver.']);
     await UI.say('', '(Al rato, un témpano de hielo pasa flotando junto al muelle, rumbo a la Isla de Cait. Colgadín se sube de un salto, sin pensárselo dos veces.)');

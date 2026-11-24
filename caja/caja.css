@@ -37,6 +37,9 @@ img[data-spr], img[data-icon], img[data-map], .shots img { image-rendering: pixe
 body.clean .guide { display: none; }
 .marks { position: absolute; inset: 0; pointer-events: none; }
 .marks i { position: absolute; background: #000; }
+/* Raya de control de 10 cm en el margen de arriba, entre las marcas: si al imprimir mide menos, se ha impreso encogida */
+.ruler { position: absolute; left: 30mm; top: 2.6mm; width: 100mm; height: 5.6mm; border: .2mm solid #000; border-top: 0;
+  font: 6.5pt/1 var(--body); color: #000; text-align: center; padding-top: .2mm; }
 
 @media print {
   html, body { background: none; padding: 0; }

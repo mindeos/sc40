@@ -128,5 +128,5 @@ body.solo { padding: 0; } body.solo .noprint { display: none; } body.solo .page 
 .spread { position: relative; width: 297mm; height: 210mm; margin: 0 auto 10mm; background: #fff; box-shadow: 0 2mm 6mm rgba(0, 0, 0, .45);
   display: flex; justify-content: center; align-items: center; }
 .spread .page { margin: 0 !important; box-shadow: none; }
-.spread i { position: absolute; background: #000; }
+.spread > i { position: absolute; background: #000; } /* solo las marcas de corte: no las cursivas del texto */
 @media print { .spread { margin: 0; box-shadow: none; break-after: page; } }

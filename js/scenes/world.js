@@ -8,7 +8,7 @@ import { makeTiles } from '../art.js';
 import { SCRIPTS } from '../story.js';
 import { traceBeam, beamColor } from '../beam.js';
 
-const SPEED = 74;
+const SPEED = 74; // ×2 con el truco #iwannagofast (State.d.flags.fast)
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 let TILES = null;
 
@@ -17,7 +17,7 @@ export class WorldScene extends Phaser.Scene {
 
   create() {
     const pos = State.d.pos;
-    this.beamG = null; this.darkR = null; this.nudgeTo = null; this.pressFrom = null; this.gone = false; // la escena se reutiliza: nada de referencias de la visita anterior
+    this.beamG = null; this.darkR = null; this.nudgeTo = null; this.pressFrom = null; this.gone = false; this.taps = []; // la escena se reutiliza: nada de referencias de la visita anterior
     const m = this.map = buildMap(pos.map);
     this.cameras.main.setBackgroundColor(m.id === 'isla' ? '#3f8fd8' : '#1a1412');
     this.drawGround();
@@ -209,7 +209,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    const dt = Math.min(delta, 50) / 1000, p = this.p;
+    const dt = Math.min(delta, 50) / 1000, p = this.p, fast = !!State.d.flags.fast, SPD = fast ? SPEED * 2 : SPEED;
     const wf = Math.floor(time / 600) % 2;
     this.grounds[0].setVisible(wf === 0); this.grounds[1].setVisible(wf === 1);
 
@@ -246,11 +246,11 @@ export class WorldScene extends Phaser.Scene {
         const g = this.nudgeTo, r = g.to - p[g.axis];
         // ya ha llegado (o se ha pasado mientras se pulsaba): se queda donde está
         if (Math.abs(r) < 1 || r * (g.v[0] || g.v[1]) < 0 || this.blocked(p.x + g.v[0] * 2, p.y + g.v[1] * 2)) this.nudgeTo = null;
-        else if (Math.abs(r) <= SPEED * dt) { p[g.axis] = g.to; this.nudgeTo = null; p.moving = true; }
+        else if (Math.abs(r) <= SPD * dt) { p[g.axis] = g.to; this.nudgeTo = null; p.moving = true; }
         else d = { x: g.v[0], y: g.v[1] };
       }
       if (d.x || d.y) {
-        const n = Math.hypot(d.x, d.y), vx = (d.x / n) * SPEED * dt, vy = (d.y / n) * SPEED * dt;
+        const n = Math.hypot(d.x, d.y), vx = (d.x / n) * SPD * dt, vy = (d.y / n) * SPD * dt;
         if (d.y) p.dir = d.y < 0 ? 'up' : 'down';
         if (d.x && (!d.y || this.blocked(p.x, p.y + vy))) p.dir = d.x < 0 ? 'left' : 'right';
         const ox = p.x, oy = p.y;
@@ -263,16 +263,21 @@ export class WorldScene extends Phaser.Scene {
             const c = Math.round((p[axis] - off) / TILE) * TILE + off, r = c - p[axis];
             if (!r || Math.abs(r) > 7) return;
             const ax = axis === 'y' ? p.x + step : c, ay = axis === 'y' ? c : p.y + step; // ¿está libre el carril, un paso más allá?
-            const s = Math.sign(r) * Math.min(Math.abs(r), SPEED * dt);
+            const s = Math.sign(r) * Math.min(Math.abs(r), SPD * dt);
             if (!this.blocked(ax, ay) && !this.blocked(axis === 'x' ? p.x + s : p.x, axis === 'y' ? p.y + s : p.y)) p[axis] += s;
           };
           if (vx && !vy) slide('y', 12, Math.sign(vx) * 2);
           else if (vy && !vx) slide('x', 8, Math.sign(vy) * 2);
         }
         p.moving = ox !== p.x || oy !== p.y;
-        if (p.moving) { this.trail.push({ x: p.x, y: p.y, dir: p.dir }); if (this.trail.length > 240) this.trail.shift(); }
+        if (p.moving) {
+          // Corriendo, un punto intermedio más por fotograma: los acompañantes siguen a la misma distancia
+          if (fast) this.trail.push({ x: (ox + p.x) / 2, y: (oy + p.y) / 2, dir: p.dir });
+          this.trail.push({ x: p.x, y: p.y, dir: p.dir });
+          while (this.trail.length > 240) this.trail.shift();
+        }
       }
-      if (p.moving) p.anim += dt;
+      if (p.moving) p.anim += fast ? dt * 2 : dt;
 
       // Baldosas con disparador (puertas, objetos que se recogen al pisarlos)
       const t = this.tileOf();
@@ -303,7 +308,13 @@ export class WorldScene extends Phaser.Scene {
           this.bubble.setPosition(Math.round(target.cx + (right ? half + 6 : -half - 6)), Math.round(midY + 6 + bob));
         }
       }
-      if (Input.take('a') && target && !this.running) { Sound.sfx('ok'); this.run(target.e.script, target); }
+      if (Input.take('a')) {
+        if (target && !this.running) { Sound.sfx('ok'); this.run(target.e.script, target); this.taps = []; }
+        else if (!target && State.flag('homeTaps')) { // truco #yellowbrickroad: tres toques seguidos (en menos de un segundo) llevan a casa
+          this.taps = this.taps.filter((t) => time - t < 1000).concat(time);
+          if (this.taps.length >= 3) { this.taps = []; this.run('goHome'); }
+        }
+      }
       if (Input.take('b')) UI.toggleMenu(true);
 
       // Zonas con nombre

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Super Cait's 40 — Folleto</title>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Lilita+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../guia/guia.css">
+<style>
+  /* Folleto de dos caras de 12 × 18 cm (como las guías: diseño a 148 × 222 mm reducido con zoom) */
+  .flyer, .bleed.anverso { background: radial-gradient(ellipse at 50% 30%, #ffe8a3 0%, #f6b73c 45%, #e2574c 100%); }
+  .flyer .tag { position: absolute; top: 10mm; left: 0; right: 0; text-align: center; font: 8pt var(--head); letter-spacing: 1.5pt; }
+  .flyer .logo { top: 22mm; }
+  .flyer .lead { position: absolute; top: 64mm; left: 12mm; right: 12mm; text-align: center; font: 700 17pt/1.15 var(--body); }
+  .qrcard { position: absolute; top: 84mm; left: 50%; transform: translateX(-50%); width: 82mm; padding: 5mm 5mm 4mm; background: #fff;
+    border: 1mm solid var(--ink); border-radius: 3mm; box-shadow: 1.6mm 1.6mm 0 rgba(0, 0, 0, .35); text-align: center; }
+  .qrcard img.qr { display: block; width: 70mm; height: 70mm; margin: 0 auto 3mm; image-rendering: pixelated; }
+  .qrcard .url { font: 700 14.5pt/1.1 var(--body); letter-spacing: .2pt; word-break: break-all; }
+  .qrcard .url b { color: var(--red); }
+  .flyer .hero { position: absolute; left: 7mm; bottom: 9mm; }
+  .flyer .hero img, .flyer .pal img { filter: drop-shadow(1mm 1mm 0 rgba(0, 0, 0, .35)); }
+  .flyer .foot-note { position: absolute; right: 9mm; bottom: 12mm; width: 74mm; padding: 2mm 3mm; text-align: center; font: 700 12pt/1.2 var(--body); color: #fff;
+    background: rgba(26, 20, 18, .82); border-radius: 2mm; }
+  /* reverso */
+  .howto, .bleed.reverso { background: var(--paper); }
+  .howto .inner { position: absolute; top: 30mm; left: 11mm; right: 11mm; font-size: 14pt; line-height: 1.25; }
+  .howto ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 4mm; }
+  .howto ol.steps li { counter-increment: s; position: relative; padding-left: 12mm; margin-bottom: 4.5mm; min-height: 9mm; }
+  .howto ol.steps li::before { content: counter(s); position: absolute; left: 0; top: -.5mm; width: 8mm; height: 8mm; border: .7mm solid var(--ink);
+    border-radius: 50%; background: var(--yellow); font: 10pt/7mm var(--head); text-align: center; }
+  .howto .box { font-size: 13pt; margin: 2mm 0 5mm; }
+  .howto .keys td { padding: 1mm 2mm 1mm 0; vertical-align: top; font-size: 13pt; }
+  .howto .sign { position: absolute; left: 11mm; right: 11mm; bottom: 19mm; text-align: center; font: 700 15pt/1.3 var(--body); color: var(--purple); }
+  .howto .sign img { display: block; margin: 0 auto 2mm; }
+
+  /* Imposición para imprimir en casa (por defecto): A4 apaisado, dos folletos por cara con 3 mm de sangrado y marcas de
+     corte. Los dos folletos quedan simétricos respecto al centro de la hoja, así que anverso y reverso cuadran al dar la
+     vuelta al papel aunque la impresora desplace un poco la segunda cara (el sangrado tapa ese desajuste). */
+  .sheet { position: relative; width: 297mm; height: 210mm; margin: 0 auto 10mm; background: #fff; box-shadow: 0 2mm 6mm rgba(0, 0, 0, .45); }
+  .sheet .bleed { position: absolute; top: 12mm; width: 126mm; height: 186mm; padding: 3mm; overflow: hidden; }
+  .sheet .page { margin: 0; box-shadow: none; background: none; overflow: visible; break-after: auto; }
+  .sheet .page > .band { top: -4mm; left: -4mm; right: -4mm; height: 25mm; }
+  .sheet .page > .foot { bottom: -4mm; left: -4mm; right: -4mm; height: 17mm; }
+  .sheet > i { position: absolute; background: #000; }
+  body.a4 .noprint { width: 297mm; }
+  @media print { .sheet { margin: 0; box-shadow: none; } .sheet + .sheet { break-before: page; } }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <b>Folleto de Super Cait's 40</b> para el interior de la caja: una hoja de <b>12 × 18 cm</b> a dos caras (como las guías).
+  Se imprime en <b>una hoja A4</b> que lleva dos folletos por cara (sale uno de repuesto). Ctrl+P → papel <b>A4</b>, márgenes
+  <b>Ninguno</b>, escala <b>100 %</b> (o «Tamaño real»), <b>Gráficos de fondo</b> activado y <b>doble cara volteando por el borde
+  corto</b>. Si el reverso sale boca abajo, cambia a «borde largo». Después se recorta por las marcas.
+  Para una copistería que imprima directamente a 120 × 180 mm, abre la página con <code>?suelto</code> en la dirección.
+  El QR lleva a la dirección del juego; se genera con <code>python tools/make_qr.py</code>.
+</div>
+
+<!-- ================================================================ ANVERSO -->
+<section class="page bare flyer" id="anverso">
+  <div class="tag">TU REGALO TE ESPERA</div>
+  <div class="logo">
+    <div class="s">SUPER</div>
+    <div class="b">CAIT'S <span>40</span></div>
+  </div>
+  <div class="lead">Escanea el código con la cámara del móvil o escribe la dirección en el navegador.</div>
+  <div class="qrcard">
+    <img class="qr" src="qr.svg" alt="Código QR del juego">
+    <div class="url">mindeos.github.io/<b>sc40</b></div>
+  </div>
+  <div class="hero"><img data-spr="colgadin_down_0" data-x="7" alt="Colgadín"></div>
+  <div class="foot-note">Funciona en el ordenador, el móvil y la tablet. No hace falta instalar nada.</div>
+</section>
+
+<!-- ================================================================ REVERSO -->
+<section class="page bare howto" id="reverso">
+  <div class="band"></div><h1 class="small" style="left:11mm">CÓMO EMPEZAR</h1><div class="foot"></div>
+  <div class="inner">
+    <ol class="steps">
+      <li>Abre <b>mindeos.github.io/sc40</b> en el navegador (o escanea el QR del otro lado).</li>
+      <li>Sube el volumen: la música forma parte de la fiesta.</li>
+      <li>Pulsa <b>Nueva partida</b>. La partida se guarda sola, así que juega siempre desde el <b>mismo dispositivo y
+        navegador</b> para no perderla.</li>
+      <li>En el móvil puedes añadirlo a la <b>pantalla de inicio</b> (menú del navegador → «Añadir a pantalla de inicio») y
+        abrirlo como una app más.</li>
+    </ol>
+    <div class="box">
+      <h3>Los controles</h3>
+      <table class="keys">
+        <tr><td><b>Mover</b></td><td>Flechas o WASD · en pantalla táctil, la cruceta</td></tr>
+        <tr><td><b>Acción</b></td><td>Espacio, Intro o E · en pantalla táctil, el botón de la huellita</td></tr>
+        <tr><td><b>Menú</b></td><td>Esc, X o M · en pantalla táctil, arriba a la derecha</td></tr>
+      </table>
+    </div>
+    <p>¿Te atascas? Pregunta a los sabios del templo: siempre tienen un consejo. Y en el manual está todo lo demás.</p>
+  </div>
+  <div class="sign"><img data-spr="colgadin_down_1" data-x="5" alt="">¡Que empiece la fiesta!</div>
+</section>
+
+<script>
+// Imposición en A4 apaisado (salvo con ?suelto): cada cara del folleto, dos veces por hoja, con sangrado y marcas de corte.
+// Va antes de guia.js para que este rellene los sprites también en las copias.
+if (!new URLSearchParams(location.search).has('suelto')) {
+  document.body.classList.add('a4');
+  document.head.insertAdjacentHTML('beforeend', '<style>@page { size: A4 landscape; margin: 0; }</style>');
+  // corte de cada folleto (mm desde la esquina de la hoja): x 25,5–145,5 y 151,5–271,5; y 15–195
+  const X = [25.5, 145.5, 151.5, 271.5], Y = [15, 195];
+  for (const pg of document.querySelectorAll('section.page')) {
+    const sh = document.createElement('div'); sh.className = 'sheet';
+    pg.parentNode.insertBefore(sh, pg);
+    for (const [k, left] of [22.5, 148.5].entries()) {
+      const b = document.createElement('div'); b.className = 'bleed ' + pg.id; b.style.left = left + 'mm';
+      const copy = k ? pg.cloneNode(true) : pg; if (k) copy.removeAttribute('id');
+      b.appendChild(copy); sh.appendChild(b);
+    }
+    const mk = (x, y, w, h) => { const i = document.createElement('i'); Object.assign(i.style, { left: x + 'mm', top: y + 'mm', width: w + 'mm', height: h + 'mm' }); sh.appendChild(i); };
+    for (const x of X) { mk(x - 0.1, 4, 0.2, 7); mk(x - 0.1, 199, 0.2, 7); }
+    for (const y of Y) { mk(4, y - 0.1, 17.5, 0.2); mk(275.5, y - 0.1, 17.5, 0.2); }
+  }
+}
+</script>
+<script type="module" src="../guia/guia.js"></script>
+</body>
+</html>

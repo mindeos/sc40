@@ -490,7 +490,7 @@ function helada() {
   m.ent({ id: 'ovejoncio', npc: 'ovejoncio', tx: 27, ty: 11, solid: true, script: 'ovejoncio' });
 
   m.ent({ id: 'narwal', tex: 'narwal', tx: 21, ty: 23, ox: 6, oy: 6, solid: true, script: 'narwalBack', bob: true, when: () => S.flag('narwal') });
-  // Sin Narwal (se ha llegado con el truco #frozen): al final del muelle no hay quien te lleve de vuelta
+  // Sin Narwal (se ha llegado con el truco #pamukalefeet): al final del muelle no hay quien te lleve de vuelta
   m.ent({ id: 'dock_end', tx: 21, ty: 23, solid: true, script: 'heladaAtrapado', when: () => !S.flag('narwal') });
   m.ent({ id: 'heladoncio', npc: 'heladoncio', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => !S.flag('hat') });
   m.ent({ id: 'heladoncio_h', npc: 'heladoncioh', tx: 22, ty: 8, solid: true, script: 'heladoncio', when: () => S.flag('hat') }); // con su sombrero
