@@ -1,0 +1,111 @@
+/* Caja de Super Cait's 40: carátula para caja de DVD estándar (273 × 183 mm: contraportada 129,5 + lomo 14 + portada 129,5),
+   con 3 mm de sangrado por cada lado (279 × 189 mm), centrada en un A4 horizontal con marcas de corte y de pliegue.
+   Mismo estilo que el manual (guia/): fuentes, colores y sprites dibujados con el código del juego. */
+@font-face { font-family: 'VT323'; src: url('../fonts/vt323.woff2') format('woff2'); }
+:root {
+  --red: #d62a2a; --red-d: #9e1b1f; --yellow: #ffd23f; --yellow-d: #e8a800; --pink: #f06aa8;
+  --purple: #4b2a8f; --ink: #1a1412; --paper: #fffdf6; --cream: #fff3d6;
+  --head: 'Press Start 2P', 'VT323', monospace;
+  --title: 'Lilita One', 'Arial Black', sans-serif;
+  --body: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  /* medidas */
+  --bleed: 3mm; --back: 129.5mm; --spine: 14mm; --front: 129.5mm; --h: 183mm;
+}
+* { box-sizing: border-box; }
+@page { size: A4 landscape; margin: 0; }
+html { background: #5b5f6b; }
+body { margin: 0; padding: 10mm 0; font-family: var(--body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+img[data-spr], img[data-icon], img[data-map], .shots img { image-rendering: pixelated; }
+.noprint { max-width: 277mm; margin: 0 auto 6mm; padding: 3mm 4mm; background: #fff; border-radius: 2mm; font: 11pt/1.35 var(--body); }
+
+/* ------------------------------------------------------------ hoja A4 y carátula */
+.sheet { position: relative; width: 297mm; height: 210mm; margin: 0 auto; background: #fff; box-shadow: 0 2mm 6mm rgba(0, 0, 0, .45); }
+.cover { position: absolute; left: 9mm; top: 10.5mm; width: 279mm; height: 189mm; overflow: hidden; }
+.panel { position: absolute; top: 0; height: 100%; overflow: hidden; }
+.back { left: 0; width: calc(var(--bleed) + var(--back)); }
+.spine { left: calc(var(--bleed) + var(--back)); width: var(--spine); }
+.front { left: calc(var(--bleed) + var(--back) + var(--spine)); width: calc(var(--front) + var(--bleed)); }
+
+/* Guías de pantalla: corte (negro discontinuo), zona segura (verde), pliegues del lomo (azul) */
+.guide { position: absolute; pointer-events: none; z-index: 50; }
+.trim { inset: var(--bleed); outline: .25mm dashed rgba(0, 0, 0, .6); }
+.safe { top: 8mm; bottom: 8mm; outline: .25mm dashed rgba(30, 160, 60, .8); }
+.safe-back { left: 8mm; width: calc(var(--back) - 9mm); }
+.safe-front { right: 8mm; width: calc(var(--front) - 9mm); }
+.fold { top: 0; bottom: 0; width: 0; border-left: .25mm dashed rgba(40, 90, 220, .9); }
+.fold.f1 { left: calc(var(--bleed) + var(--back)); } .fold.f2 { left: calc(var(--bleed) + var(--back) + var(--spine)); }
+body.clean .guide { display: none; }
+.marks { position: absolute; inset: 0; pointer-events: none; }
+.marks i { position: absolute; background: #000; }
+
+@media print {
+  html, body { background: none; padding: 0; }
+  .noprint, .guide { display: none !important; }
+  .sheet { margin: 0; box-shadow: none; }
+}
+
+/* ------------------------------------------------------------ portada */
+.front .sky { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #ffe8a3 0%, #f6b73c 42%, #e2574c 78%, #a8323a 100%); }
+.front .ground { position: absolute; left: 0; bottom: 0; width: 100%;
+  -webkit-mask-image: linear-gradient(transparent, #000 22%); mask-image: linear-gradient(transparent, #000 22%); filter: saturate(1.1) brightness(.92); }
+.confetti { position: absolute; inset: 0; }
+.confetti i { position: absolute; width: 1.6mm; height: .9mm; }
+.front .band { position: absolute; left: 0; right: 0; top: 0; height: 16mm; padding: 3mm 11mm 0 4mm; display: flex; align-items: center; justify-content: space-between;
+  background: var(--red); border-bottom: 1.2mm solid var(--red-d); font: 6.5pt var(--head); color: #fff; letter-spacing: .8pt; }
+.logo { position: absolute; top: 23mm; left: 0; right: 3mm; text-align: center; }
+.logo .s { display: block; margin-bottom: 3mm; font: 12pt var(--head); color: #fff; -webkit-text-stroke: 1pt var(--ink); paint-order: stroke fill; text-shadow: .8mm .8mm 0 var(--ink); }
+.logo .b { font: 25pt/1.25 var(--head); color: var(--yellow); -webkit-text-stroke: 1.4pt var(--ink); paint-order: stroke fill; text-shadow: 1.3mm 1.3mm 0 var(--ink); white-space: nowrap; }
+.logo .b span { color: var(--pink); }
+.sticker { position: absolute; top: 49mm; right: 10mm; width: 25mm; height: 25mm; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--yellow); border: .9mm solid var(--ink); box-shadow: 1mm 1mm 0 rgba(0, 0, 0, .35); transform: rotate(12deg);
+  font: 6.5pt/1.6 var(--head); text-align: center; color: var(--red-d); }
+.balloons { position: absolute; top: 50mm; left: 9mm; display: flex; align-items: flex-start; gap: .5mm; }
+.balloons img:nth-child(2) { margin-top: 4mm; } .balloons img:nth-child(3) { margin-top: 1.5mm; }
+.hero { position: absolute; left: 0; right: 3mm; top: 64mm; text-align: center; }
+.hero img { filter: drop-shadow(1.5mm 1.5mm 0 rgba(0, 0, 0, .35)); }
+.crowd { position: absolute; display: flex; justify-content: space-between; align-items: flex-end; }
+.crowd img { filter: drop-shadow(.8mm .8mm 0 rgba(0, 0, 0, .35)); }
+.crowd img.shadow { filter: brightness(0) opacity(.55); } /* invitados sorpresa: solo la silueta */
+.crowd.back-row { left: 10mm; right: 13mm; bottom: 37mm; }
+.crowd.front-row { left: 24mm; right: 11mm; bottom: 12mm; }
+.rating-front { position: absolute; left: 7mm; bottom: 8mm; }
+
+/* clasificación «40+» (original del juego: la Junta de Peluches) */
+.r { width: 13mm; border: .7mm solid var(--ink); text-align: center; font: 10pt/1.25 var(--head); background: #fff; padding: .8mm 0; }
+.r small { display: block; font: 4.5pt var(--head); }
+
+/* ------------------------------------------------------------ lomo */
+.spine { background: linear-gradient(90deg, var(--red-d), var(--red) 30%, var(--red) 70%, var(--red-d)); display: flex; flex-direction: column; align-items: center; }
+.spine-face { margin-top: 9mm; filter: drop-shadow(.5mm .5mm 0 rgba(0, 0, 0, .4)); }
+.spine-title { flex: 1; display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl;
+  font: 10pt var(--head); color: #fff; -webkit-text-stroke: .7pt var(--ink); paint-order: stroke fill; letter-spacing: 1pt; white-space: nowrap; }
+.spine-title b { font-weight: 400; color: var(--yellow); } .spine-title i { font-style: normal; color: var(--pink); }
+.spine-r { margin-bottom: 9mm; width: 10mm; border: .5mm solid var(--ink); background: #fff; font: 6pt/1.5 var(--head); text-align: center; padding: .5mm 0; }
+.spine-r small { display: block; font: 3.5pt var(--head); }
+
+/* ------------------------------------------------------------ contraportada */
+.back { background: var(--cream); }
+.back .band { position: absolute; left: 0; right: 0; top: 0; height: 16mm; padding: 3mm 4mm 0 8mm; display: flex; align-items: center;
+  background: var(--purple); border-bottom: 1.2mm solid #2e1a5c; }
+.mini-logo { font: 9pt var(--head); color: #fff; -webkit-text-stroke: .7pt var(--ink); paint-order: stroke fill; text-shadow: .5mm .5mm 0 var(--ink); }
+.mini-logo b { font-weight: 400; color: var(--yellow); } .mini-logo span { color: var(--pink); }
+.back .inner { position: absolute; top: 19.5mm; left: 8mm; right: 5mm; }
+.tagline { margin: 0 0 1.5mm; font: 14pt/1.05 var(--title); color: var(--red); -webkit-text-stroke: .3pt var(--ink); }
+.blurb { margin: 0 0 2.5mm; font: 10pt/1.2 var(--body); }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 3mm; margin: 0 2mm 3mm; }
+.shots img { width: 100%; display: block; border: .6mm solid var(--ink); box-shadow: .8mm .8mm 0 rgba(0, 0, 0, .35); }
+.shots img:nth-child(1) { transform: rotate(-1.2deg); } .shots img:nth-child(2) { transform: rotate(1deg); }
+.shots img:nth-child(3) { transform: rotate(.8deg); } .shots img:nth-child(4) { transform: rotate(-1deg); }
+.feats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 3mm; font: 9pt/1.1 var(--body); }
+.feats li { display: flex; align-items: center; gap: 1.6mm; }
+.feats b { color: var(--purple); }
+.legal-strip { position: absolute; left: 8mm; right: 5mm; bottom: 8mm; border-top: .5mm solid var(--ink); padding-top: 2mm; }
+.legal-strip .rating { display: flex; gap: 2.5mm; align-items: center; font: 8pt/1.15 var(--body); margin-bottom: 2mm; }
+.legal-strip .info { display: flex; align-items: flex-end; justify-content: space-between; gap: 3mm; }
+.specs { display: flex; flex-wrap: wrap; gap: 1mm; }
+.specs span { border: .4mm solid var(--ink); border-radius: 1mm; padding: .2mm 1.4mm; font: 700 7.5pt/1.3 var(--body); background: #fff; }
+.bar-wrap { flex: none; background: #fff; padding: 1mm 1.5mm .6mm; border: .3mm solid #999; text-align: center; }
+.barcode { display: flex; height: 9mm; align-items: stretch; margin-bottom: 1.8mm; } /* hueco para las barras guía, más largas */
+.barcode i { display: block; background: #000; }
+.code { font: 4.5pt/1.4 var(--head); letter-spacing: .3pt; white-space: nowrap; }
+.legal-strip .tiny { margin: 1.5mm 0 0; font: 7pt/1.2 var(--body); color: #5b4a3a; }

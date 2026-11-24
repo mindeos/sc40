@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Super Cait's 40 — Caja (DVD)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Lilita+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="caja.css">
+</head>
+<body>
+
+<div class="noprint">
+  <b>Caja de Super Cait's 40</b> · carátula para caja de DVD estándar: <b>273 × 183 mm</b> (contraportada 129,5 + lomo 14 +
+  portada 129,5) con <b>3 mm de sangrado</b>. Para imprimir: Ctrl+P → papel <b>A4 horizontal</b>, escala <b>100 %</b>,
+  márgenes <b>Ninguno</b> y <b>Gráficos de fondo</b> activado. Recorta por las marcas negras y dobla por las de los lados del lomo.
+  Las líneas de colores (sangrado, zona segura y lomo) solo se ven en pantalla.
+</div>
+
+<div class="sheet">
+  <div class="cover">
+
+    <!-- ============================================================ CONTRAPORTADA -->
+    <section class="panel back">
+      <div class="band">
+        <div class="mini-logo">SUPER <b>CAIT'S</b> <span>40</span></div>
+      </div>
+      <div class="inner">
+        <h2 class="tagline">¡Cait cumple 40 y la isla entera prepara la fiesta sorpresa!</h2>
+        <p class="blurb">Colgadín tiene un montón de invitaciones y un solo día para repartirlas por toda la isla. Explora,
+          echa una mano a quien te encuentres por el camino y prepara la mejor fiesta sorpresa que se recuerda…
+          <b>sin que el cumpleañero se entere de nada.</b></p>
+
+        <div class="shots">
+          <img data-map="isla" data-rect="14,4,16,9" data-empty alt="">
+          <img src="img/sokoban.png" alt="">
+          <img src="img/monos.png" alt="">
+          <img src="img/awawas.png" alt="">
+        </div>
+
+        <ul class="feats">
+          <li><img data-icon="invites" data-x="2.2" alt=""><span><b>Más de 20 amigos</b> a los que invitar a la fiesta</span></li>
+          <li><img data-icon="cake" data-x="2.2" alt=""><span><b>Más de 15 pruebas</b> distintas</span></li>
+          <li><img data-icon="sock_0" data-x="2.2" alt=""><span><b>Calcetines perdidos</b> por todos los rincones</span></li>
+          <li><img data-icon="gift" data-x="2.2" alt=""><span>Un <b>gachapón</b> lleno de regalos</span></li>
+          <li><img data-icon="music" data-x="2.2" alt=""><span><b>Banda sonora</b> en chiptune</span></li>
+          <li><img data-icon="question" data-x="2.2" alt=""><span>Y algún <b>secreto</b> que no cabe en la caja</span></li>
+        </ul>
+      </div>
+
+      <div class="legal-strip">
+        <div class="rating"><div class="r">40+<small>AÑOS</small></div>
+          <div>Clasificado por la Junta de Peluches. Puede contener tartas, globos y calcetines
+            perdidos.</div></div>
+        <div class="info">
+          <div class="specs"><span>1 jugador</span><span>Guardado automático</span><span>Ordenador, móvil y tablet</span></div>
+          <div class="bar-wrap">
+            <div class="barcode" id="barcode"></div>
+            <div class="code">SC40 · CAIT · 0040</div>
+          </div>
+        </div>
+        <p class="tiny">Mindeos y los peluches de la isla. Ningún peluche resultó herido durante el desarrollo de este juego.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ LOMO -->
+    <section class="panel spine">
+      <img class="spine-face" data-spr="colgadin_down_0" data-x="2.3" alt="">
+      <div class="spine-title"><span>SUPER <b>CAIT'S</b> <i>40</i></span></div>
+      <div class="spine-r">40+<small>AÑOS</small></div>
+    </section>
+
+    <!-- ============================================================ PORTADA -->
+    <section class="panel front">
+      <div class="sky"></div>
+      <div class="confetti" id="confetti"></div>
+      <img class="ground" data-map="isla" data-rect="12,2,26,13" data-empty alt="">
+      <div class="band">
+        <span>40 ANIVERSARIO</span><span>1 JUGADOR</span>
+      </div>
+      <div class="logo">
+        <div class="s">SUPER</div>
+        <div class="b">CAIT'S <span>40</span></div>
+      </div>
+      <div class="sticker">¡FIESTA<br>SORPRESA!</div>
+      <div class="balloons">
+        <img data-icon="pballoon_r" data-x="3.2" alt=""><img data-icon="pballoon_y" data-x="3.2" alt=""><img data-icon="pballoon_b" data-x="3.2" alt="">
+      </div>
+      <div class="hero"><img data-spr="colgadin_down_0" data-x="12" alt="Colgadín"></div>
+      <div class="rating-front"><div class="r">40+<small>AÑOS</small></div></div>
+    </section>
+
+    <!-- Guías (solo en pantalla): sangrado, corte, zona segura y pliegues del lomo -->
+    <div class="guide trim"></div>
+    <div class="guide safe safe-back"></div>
+    <div class="guide safe safe-front"></div>
+    <div class="guide fold f1"></div>
+    <div class="guide fold f2"></div>
+  </div>
+  <!-- Marcas de corte y de pliegue (se imprimen, fuera de la carátula) -->
+  <div class="marks" id="marks"></div>
+</div>
+
+<script type="module" src="../guia/guia.js"></script>
+<script type="module" src="caja.js"></script>
+</body>
+</html>

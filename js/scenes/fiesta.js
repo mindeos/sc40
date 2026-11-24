@@ -1,0 +1,151 @@
+// Escena final: la fiesta sorpresa en casa de Cait.
+import { State, CHARACTERS, GACHA } from '../state.js';
+import { Input } from '../input.js';
+import { UI } from '../ui.js';
+import { Sound } from '../audio.js';
+
+// Qué sprites trae cada invitado
+const GUESTS = {
+  lolete: ['lolete'], scooby: ['scooby'], cuca: ['cuca'], fuxia: ['fuxia'], perrunfli: ['perrunfli'], bart: ['bart'], tigrito: ['tigrito'],
+  cuy: ['cuy', 'ratita_p', 'ratita_o', 'ratita_b'], kai: ['kai'], patito: ['patito'], capybaras: ['capybara', 'capybara'],
+  owitos_teatro: ['owito_g', 'owito_k', 'owito_w', 'owito_v'], mantecas: ['mantecas', 'manteca2'], peludito: ['peludito'],
+  owitos_navidad: ['owito_n', 'owito_r'], owinken: ['owinken'], heladoncio: ['heladoncio'],
+  gatos: ['gato', 'gatot'], siri: ['siri', 'awawa', 'awawa'], ovejoncio: ['ovejoncio'],
+  // Los Owitos de la Inquisición (mesa de guerra del castillo), con su atuendo; entre ellos, el cosplay de Cullen de Cait
+  inquisicion: ['owi_jos', 'owi_lel', 'owi_cas', 'owi_cul', 'owi_dor', 'owi_mor', 'owi_col'],
+};
+const LAYER = [0xf7a8c0, 0xfff3dc, 0x9fc86a, 0x4a2c1e];
+const BULBS = [0xffe066, 0xe2574c, 0x3f8fd8, 0x82cc6a, 0xf7a8c0];
+const LINES = {
+  lolete: 'He movido todos los muebles para hacer sitio. Bueno, menos la cama de Cait: esa pesa más que yo.', fuxia: '¡Dale a la gramola! Hoy pincho yo.', peludito: 'Declaro este cumpleaños fiesta nacional del Castillo de Mazapán.',
+  heladoncio: 'La tarta ha llegado entera. Y yo, que casi no llego a casa de Cait. ¡Menudo disgusto!', bart: 'Cuarenta años son solo cuarenta repeticiones. ¡Técnica estricta!',
+  kai: 'Mrrrau. (Kai ha traído su propio puntero láser lila. En colorimetría no se fía de nadie.)',
+  owinken: 'Oink. Prometo que soy el original. A mis clones les he guardado un trozo de tarta. Bueno, mil.', siri: '¡Awawa! Los globos los hemos inflado nosotros. Con los dientecitos no, tranquilos.', ovejoncio: 'He traído el portátil por si hay que hackear algo. Es típico.',
+};
+
+export class FiestaScene extends Phaser.Scene {
+  constructor() { super('fiesta'); }
+
+  create() {
+    const d = State.d, cam = this.cameras.main;
+    cam.setBackgroundColor('#1a1412').fadeIn(600);
+    UI.hud(false); UI.minibar(null);
+    Sound.music(null);
+    for (let y = 0; y < 12; y++) for (let x = 0; x < 20; x++) this.add.image(x * 16, y * 16, y === 0 ? 'tile_Y' : y === 1 ? 'tile_Z' : 'tile_O').setOrigin(0);
+    this.add.image(160, 150, 'rug').setScale(2);
+    this.add.image(40, 48, 'kallax_cait').setOrigin(0.5, 1); this.add.image(290, 46, 'floorlamp_cait').setOrigin(0.5, 1); this.add.image(26, 66, 'bed2').setOrigin(0.5, 1);
+    [120, 160, 200].forEach((x, i) => this.add.image(x, 26, 'cuadro' + (i + 1)).setOrigin(0.5, 1));
+    this.add.image(250, 54, 'sofa_cait2').setOrigin(0.5, 1);
+    this.fx = this.add.graphics().setDepth(900);
+    this.deco = this.add.graphics().setDepth(120);
+
+    // Invitados, repartidos en filas a los lados; el centro queda para la tarta y Colgadín
+    const sprites = [], owner = [];
+    for (const c of CHARACTERS) if (d.invited.includes(c.id)) for (const s of GUESTS[c.id] || []) { sprites.push(s === 'heladoncio' && State.flag('hat') ? 'heladoncioh' : s); owner.push(c.id); }
+    const spots = [];
+    for (const y of [74, 98, 122, 146, 170]) for (const x of [22, 50, 78, 106, 214, 242, 270, 298]) spots.push([x + (y % 48 ? 0 : 8), y]);
+    this.guests = sprites.slice(0, spots.length).map((s, i) => {
+      const [x, y] = spots[i];
+      return { spr: this.add.image(x, y, s + '_down_0').setOrigin(0.5, 1).setDepth(y), tex: s, id: owner[i], y, ph: i * 0.7 };
+    });
+    if (d.invited.includes('narwal')) this.add.image(160, 50, 'narwal').setOrigin(0.5, 1).setDepth(50);
+    // Globos de fiesta de los awawas (normales, de colores)
+    if (State.flag('globos')) [[24, 46], [296, 46], [70, 40], [250, 40], [120, 36], [200, 36]].forEach(([x, y], i) => this.add.image(x, y, 'pballoon_' + 'rybpgr'[i]).setDepth(55));
+    if (State.flag('gramola')) this.add.image(116, 56, 'gramola').setOrigin(0.5, 1).setDepth(50);
+    this.add.image(160, 108, 'table').setOrigin(0.5, 1).setScale(1.5).setDepth(100);
+    this.col = this.add.image(160, 150, 'colgadin_up_0').setOrigin(0.5, 1).setDepth(150).setScale(2);
+    this.layers = Math.max(1, +d.flags.tarta || 1);
+    this.gifts = d.gacha.length + d.gifts.length;
+    this.confetti = Array.from({ length: 70 }, (_, i) => ({ x: (i * 53) % 320, y: -((i * 37) % 180), v: 20 + (i % 5) * 9, c: BULBS[i % 5], w: i }));
+    this.party = false;
+    Input.clear();
+    this.sequence();
+  }
+
+  // Dónde poner el cuadro de diálogo: el de abajo tapa las tres filas de abajo y el de arriba solo la primera, así que
+  // va arriba salvo que quien habla esté en la parte de arriba (la primera o la segunda fila, o Narwal).
+  // `id`: invitado que habla; `tex`: un sprite concreto; sin nada (narrador o todos): arriba.
+  at({ id, tex } = {}) {
+    if (id === 'narwal') return { pos: 'bottom' };
+    const ys = this.guests.filter((g) => (id && g.id === id) || (tex && g.tex === tex)).map((g) => g.y);
+    return { pos: ys.length && ys.reduce((a, b) => a + b) / ys.length < 110 ? 'bottom' : 'top' };
+  }
+  wait(ms) { return new Promise((r) => this.time.delayedCall(ms, r)); }
+
+  async sequence() {
+    const d = State.d, n = d.invited.length, top = { pos: 'top' };
+    await this.wait(2200); // un rato sin mensajes para ver a todos escondidos
+    await UI.say('Colgadín', ['Luces… tarta… música… y todos escondidos. Ya está todo.', 'Chsss… ¡que viene, que viene!'], top);
+    this.party = true;
+    Sound.logro();
+    this.cameras.main.flash(500, 255, 255, 255);
+    await this.wait(1000);
+    await UI.say('TODOS', '¡¡¡SORPRESA!!!', top);
+    // Tigrito da la entrada y desde ese momento suena el «Cumpleaños feliz» (si aún suena la música de logro, al acabar)
+    if (d.invited.includes('tigrito')) await UI.say('Tigrito', 'Y ahora todos conmigo: ¡1, 2, 3!', this.at({ id: 'tigrito' }));
+    Sound.music('fiesta', true, Sound.ctx ? Math.max(Sound.ctx.currentTime + 0.08, (Sound.jingleEnd || 0) + 0.15) : undefined);
+    await this.wait(2500); // y otro rato para ver la fiesta antes de que empiecen a hablar
+    const who = CHARACTERS.filter((c) => d.invited.includes(c.id) && LINES[c.id]);
+    for (const c of who) await UI.say(c.name, LINES[c.id], this.at({ id: c.id }));
+    if (d.invited.includes('inquisicion')) {
+      await UI.say('Owitos de la Inquisición', ['Operación «Fiesta sorpresa»: completada con éxito.', 'Buen trabajo, Colgadín. Sabíamos que eras el indicado.', '¡Feliz cumpleaños, comandante!'], this.at({ id: 'inquisicion' }));
+      await UI.say('', '(Entre ellos hay un Owito con capa de piel granate, pelo rubio y armadura plateada. Se parece muchísimo a alguien…)', this.at({ tex: 'owi_cul' }));
+    }
+    // Cuca (en ruso, con Cuy de traductor) y, cerrando la ronda, Scooby
+    if (d.invited.includes('cuca') && d.invited.includes('cuy')) {
+      await UI.say('Cuca', 'Гав-гав! Плюшевые… нет, нет, нет!', { ...this.at({ id: 'cuca' }), ruso: true });
+      await UI.say('Cuy', 'Dice que no le pongas todos esos peluches encima, Cait. Que así no hay quien se eche una siesta.', this.at({ id: 'cuy' }));
+    }
+    if (d.invited.includes('scooby')) {
+      await UI.say('Scooby', ['Y una última cosa, Cait.', '¿Sabes lo mejor de estar ahí arriba? Que sigo cumpliendo años y no me sale ni una cana. Gracias por seguir celebrándolos.', '¡Todos te queremos muchísimo!'], this.at({ id: 'scooby' }));
+    }
+    await UI.say('', [
+      `Han venido ${n} de ${CHARACTERS.length} invitados, la tarta tiene ${this.layers} ${this.layers === 1 ? 'piso' : 'pisos'} y hay ${this.gifts} ${this.gifts === 1 ? 'regalo' : 'regalos'} esperando.`,
+      '«Cumpleaños feliz, cumpleaños feliz, te deseamos todos…»',
+    ], top);
+    // Sin mensajes: se puede mirar la fiesta todo lo que se quiera; acción (o «Terminar») cierra
+    Input.clear();
+    await new Promise((resolve) => {
+      const done = () => { if (this.stay) { this.stay = null; UI.minibar(null); resolve(); } };
+      this.stay = done; this.stayT = this.time.now + 600; // que la pulsación que cierra el último mensaje no cuente
+      UI.minibar('¡Que siga la fiesta!', { exit: done, labels: { exit: 'Terminar' } });
+    });
+    State.set('fin');
+    // Primero, el agradecimiento (pantalla final); después, el móvil de Cait y los créditos (js/scenes/movil.js)
+    const stats = { guests: n, total: CHARACTERS.length, layers: this.layers, gifts: this.gifts, gachaTotal: GACHA.length };
+    await UI.ending(stats);
+    this.cameras.main.fadeOut(900, 13, 10, 20);
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('movil', stats));
+  }
+
+  update(time, delta) {
+    const dt = Math.min(delta, 50) / 1000, on = this.party;
+    for (const g of this.guests) {
+      const hop = on ? Math.abs(Math.sin(time / 180 + g.ph)) * 5 : 0;
+      g.spr.setY(g.y - hop).setTexture(`${g.tex}_down_${on ? Math.floor(time / 200 + g.ph) % 2 : 0}`);
+    }
+    this.col.setTexture(on ? `colgadin_down_${Math.floor(time / 200) % 2}` : 'colgadin_up_0');
+    const g = this.deco.clear();
+    // Tarta sobre la mesa
+    for (let i = 0; i < this.layers; i++) { const w = 30 - i * 6; g.fillStyle(0x2b2320).fillRect(160 - w / 2 - 1, 84 - i * 8, w + 2, 9).fillStyle(LAYER[i]).fillRect(160 - w / 2, 85 - i * 8, w, 8).fillStyle(0xffffff, 0.5).fillRect(160 - w / 2, 85 - i * 8, w, 2); }
+    const ty = 84 - (this.layers - 1) * 8;
+    g.fillStyle(0xf4f4ee).fillRect(159, ty - 6, 2, 6);
+    if (on) g.fillStyle(0xffe066).fillCircle(160, ty - 8 + Math.sin(time / 60), 2);
+    // Regalos junto a la mesa
+    for (let i = 0; i < Math.min(this.gifts, 9); i++) { const x = 190 + (i % 3) * 9 - Math.floor(i / 3) * 3, y = 100 - Math.floor(i / 3) * 7; g.fillStyle(0x2b2320).fillRect(x - 1, y - 1, 9, 9).fillStyle(BULBS[(i + 1) % 5]).fillRect(x, y, 7, 7).fillStyle(0xffffff).fillRect(x + 3, y, 1, 7); }
+    // Guirnalda de luces de los Owitos de Navidad
+    if (State.flag('luces')) {
+      g.lineStyle(1, 0x1a1412, 1);
+      for (let x = 0; x < 320; x += 16) {
+        const y = 26 + Math.sin(x / 50) * 5;
+        g.lineBetween(x, y, x + 16, 26 + Math.sin((x + 16) / 50) * 5);
+        const lit = !on || (Math.floor(time / 250) + x / 16) % 2 === 0;
+        g.fillStyle(lit ? BULBS[(x / 16) % 5] : 0x555555).fillCircle(x + 8, y + 3, 3);
+      }
+    }
+    const f = this.fx.clear();
+    if (on) for (const c of this.confetti) { c.y += c.v * dt; if (c.y > 184) c.y = -6; f.fillStyle(c.c).fillRect(c.x + Math.sin(time / 300 + c.w) * 6, c.y, 3, 2); }
+    if (this.stay && !UI.busy && time > this.stayT && (Input.take('a') || Input.take('b'))) this.stay();
+    if (!UI.busy) Input.clear();
+  }
+}
